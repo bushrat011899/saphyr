@@ -27,7 +27,7 @@ mod debug {
     macro_rules! debug_print {
     ($($arg:tt)*) => {{
         if $crate::debug::enabled() {
-            eprintln!($($arg)*)
+            std::eprintln!($($arg)*)
         }
     }};
     }

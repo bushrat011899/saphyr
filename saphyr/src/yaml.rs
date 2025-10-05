@@ -2,8 +2,8 @@
 
 #![allow(clippy::module_name_repetitions)]
 
-use std::{
-    borrow::Cow,
+use alloc::{borrow::Cow, boxed::Box, vec::Vec};
+use core::{
     convert::TryFrom,
     hash::{BuildHasher, Hasher},
     ops::{Index, IndexMut},
@@ -193,7 +193,7 @@ impl<'input> LoadableYamlNode<'input> for Yaml<'input> {
 
     fn take(&mut self) -> Self {
         let mut taken_out = Yaml::BadValue;
-        std::mem::swap(&mut taken_out, self);
+        core::mem::swap(&mut taken_out, self);
         taken_out
     }
 }
@@ -211,7 +211,7 @@ impl<'input> IntoIterator for Yaml<'input> {
 
 /// An iterator over a [`Yaml`] node.
 pub struct YamlIter<'input> {
-    yaml: std::vec::IntoIter<Yaml<'input>>,
+    yaml: alloc::vec::IntoIter<Yaml<'input>>,
 }
 
 impl<'input> Iterator for YamlIter<'input> {
@@ -224,7 +224,7 @@ impl<'input> Iterator for YamlIter<'input> {
 
 /// Hash the given `str` as if it were a [`Scalar::String`] object.
 fn hash_str_as_yaml_string<H: Hasher>(key: &str, mut hasher: H) -> u64 {
-    use std::hash::Hash;
+    use core::hash::Hash;
     let key = Yaml::Value(Scalar::String(key.into()));
     key.hash(&mut hasher);
     hasher.finish()

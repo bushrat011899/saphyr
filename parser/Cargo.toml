@@ -25,6 +25,8 @@ debug_prints = []
 [dependencies]
 arraydeque = { workspace = true }
 hashlink = { workspace = true }
+hashbrown = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 libtest-mimic = { workspace = true }
@@ -32,7 +34,6 @@ miette = { workspace = true }
 quickcheck = { workspace = true }
 rustyline = { workspace = true }
 saphyr = { workspace = true }
-thiserror = { workspace = true }
 
 [[test]]
 name = "yaml-test-suite"

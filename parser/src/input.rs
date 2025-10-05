@@ -3,6 +3,8 @@
 //! [`Input`] must be implemented for the parser to fetch input. Make sure your needs aren't
 //! covered by the [`BufferedInput`].
 
+use alloc::string::String;
+
 pub(crate) mod buffered;
 pub(crate) mod str;
 

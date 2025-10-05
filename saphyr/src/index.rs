@@ -1,3 +1,5 @@
+use alloc::string::{String, ToString};
+
 /// A trait to index without panicking into a structure through an [`Accessor`].
 ///
 /// [`SafelyIndex`] is implemented on YAML objects to provide the [`get`] method to conveniently
@@ -6,7 +8,7 @@
 /// out of range.
 ///
 /// [`get`]: SafelyIndex::get
-/// [`Index`]: std::ops::Index
+/// [`Index`]: core::ops::Index
 pub trait SafelyIndex<Node = Self> {
     /// Access a field of the given YAML object.
     ///
@@ -25,7 +27,7 @@ pub trait SafelyIndex<Node = Self> {
 /// the requested index is out of range.
 ///
 /// [`get_mut`]: SafelyIndexMut::get_mut
-/// [`IndexMut`]: std::ops::Index
+/// [`IndexMut`]: core::ops::Index
 pub trait SafelyIndexMut<Node = Self> {
     /// Access a field of the given YAML object (mutable).
     ///

@@ -9,8 +9,8 @@
 macro_rules! define_yaml_scalar_conversion_ops (
     (owned) => (
 define_yaml_scalar_conversion_ops!(base);
-define_as_ref_mut!(as_string_mut, &mut String, String);
-define_as_ref_mut!(as_str_mut,    &mut str,    String);
+define_as_ref_mut!(as_string_mut, &mut alloc::string::String,   String);
+define_as_ref_mut!(as_str_mut,    &mut str,                     String);
     );
 
     (borrowing) => (
@@ -34,10 +34,10 @@ define_as_ref_mut!(as_integer_mut,        &mut i64,              Integer);
 define_as_ref_mut!(as_floating_point_mut, &mut f64,              FloatingPoint);
 
 
-define_into!(into_boolean, bool,             Boolean);
-define_into!(into_i64,     i64,              Integer);
-define_into!(into_f64,     f64,              FloatingPoint);
-define_into!(into_string,  String,           String);
+define_into!(into_boolean, bool,                            Boolean);
+define_into!(into_i64,     i64,                             Integer);
+define_into!(into_f64,     f64,                             FloatingPoint);
+define_into!(into_string,  alloc::string::String,           String);
 
 // ---------- VARIANT TESTING ----------
 define_is!(is_null,           Self::Null);
@@ -65,8 +65,8 @@ define_is!(is_string,         Self::String(_));
 ///
 /// [`Yaml`]: crate::Yaml
 /// [`YamlData`]: crate::YamlData
-/// [`Index`]: std::ops::Index
-/// [`IndexMut`]: std::ops::IndexMut
+/// [`Index`]: core::ops::Index
+/// [`IndexMut`]: core::ops::IndexMut
 macro_rules! define_yaml_object_impl (
     // ============================ OWNED VARIANT ============================
     (
@@ -107,7 +107,7 @@ impl $(< $( $generic ),+ >)? $yaml $(where $($whereclause)+)? {
         match self.take() {
             Self::Representation(value, style, tag) => {
                 if let Some(scalar) =
-                    $scalartype::parse_from_cow_and_metadata(value.into(), style, tag.map(std::borrow::Cow::Owned).as_ref())
+                    $scalartype::parse_from_cow_and_metadata(value.into(), style, tag.map(alloc::borrow::Cow::Owned).as_ref())
                 {
                     *self = Self::Value(scalar);
                     true
@@ -198,7 +198,7 @@ impl< $( $generic ),+ > $yaml $(where $($whereclause)+)? {
 
     /// Convert a string to a scalar node.
     ///
-    /// YAML nodes do not implement [`std::str::FromStr`] since the trait requires that conversion
+    /// YAML nodes do not implement [`core::str::FromStr`] since the trait requires that conversion
     /// does not fail. This function attempts to parse the given string as a scalar node, falling
     /// back to a [`Scalar::String`].
     ///
@@ -225,9 +225,9 @@ impl< $( $generic ),+ > $yaml $(where $($whereclause)+)? {
         Self::value_from_cow(v.into())
     }
 
-    /// Same as [`Self::value_from_str`] but uses a [`String`] instead.
+    /// Same as [`Self::value_from_str`] but uses a [`String`](alloc::string::String) instead.
     #[must_use]
-    pub fn scalar_from_string(v: String) -> Self {
+    pub fn scalar_from_string(v: alloc::string::String) -> Self {
         Self::value_from_cow(v.into())
     }
 
@@ -250,7 +250,7 @@ impl< $( $generic ),+ > $yaml $(where $($whereclause)+)? {
     ) -> Self {
         match tag {
             Some(tag) if !tag.is_yaml_core_schema() => {
-                Self::Tagged(tag.clone(), Box::new(Self::value_from_cow_and_metadata(v, style, None).into()))
+                Self::Tagged(tag.clone(), alloc::boxed::Box::new(Self::value_from_cow_and_metadata(v, style, None).into()))
             }
             _ => Scalar::parse_from_cow_and_metadata(v, style, tag).map_or(Self::BadValue, Self::Value)
         }
@@ -268,7 +268,7 @@ impl< $( $generic ),+ > $yaml $(where $($whereclause)+)? {
     /// [`Representation`]: Self::Representation
     #[must_use]
     pub fn get_tag(&self) -> Option<&Tag> {
-        use std::borrow::Borrow;
+        use core::borrow::Borrow;
         match self {
             Self::Tagged(tag, _) => Some(tag.borrow()),
             Self::Representation(_, _, tag) => tag.as_ref().map(Borrow::borrow),
@@ -304,7 +304,7 @@ impl $(< $( $generic ),+ >)? $yaml $(where $($whereclause)+)? {
     define_into_pattern!(into_bool,                   bool                  => Self::Value($scalartype::Boolean(v))               => Some(v));
     define_into_pattern!(into_integer,                i64                   => Self::Value($scalartype::Integer(v))               => Some(v));
     define_into_pattern!(into_floating_point,         f64                   => Self::Value($scalartype::FloatingPoint(v))         => Some(v.into()));
-    define_into_pattern!(into_string,                 String                => Self::Value($scalartype::String(v))                => Some(v.into()));
+    define_into_pattern!(into_string,                 alloc::string::String => Self::Value($scalartype::String(v))                => Some(v.into()));
 
     // ---------- MAPPING / SEQUENCE CONVERSIONS ----------
     define_as_ref!(as_mapping,          &$mappingtype,      Mapping);
@@ -418,7 +418,7 @@ impl $(< $( $generic ),+ >)? $yaml $(where $($whereclause)+)? {
                 // Keys are immutable. We cannot just do `map.iter_mut().map(...)`. We need to
                 // tear apart the hashmap to rebuild it.
                 let mut tmp = LinkedHashMap::default();
-                std::mem::swap(&mut tmp, &mut map);
+                core::mem::swap(&mut tmp, &mut map);
 
                 // Turn the temporary into an iterator, call `parse_representation_recursive`
                 map = tmp
@@ -573,8 +573,8 @@ define_yaml_object_index_traits_impl!(
 ///
 /// This is called by [`define_yaml_object_impl`].
 ///
-/// [`Index`]: std::ops::Index
-/// [`IndexMut`]: std::ops::IndexMut
+/// [`Index`]: core::ops::Index
+/// [`IndexMut`]: core::ops::IndexMut
 macro_rules! define_yaml_object_index_traits_impl (
     (
         $yaml:ty,
