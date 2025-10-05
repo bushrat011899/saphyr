@@ -10,7 +10,14 @@ use crate::{
     BufferedInput, Marker,
 };
 
-use std::{borrow::Cow, collections::HashMap, fmt::Display};
+use alloc::{
+    borrow::Cow,
+    string::{String, ToString},
+    vec::Vec,
+};
+use core::fmt::Display;
+
+use hashbrown::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Debug, Eq)]
 enum State {
@@ -117,7 +124,7 @@ impl Tag {
 }
 
 impl Display for Tag {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if self.handle == "!" {
             write!(f, "!{}", self.suffix)
         } else {
@@ -539,6 +546,7 @@ impl<'input, T: Input> Parser<'input, T> {
                 self.load_mapping(recv)
             }
             _ => {
+                #[cfg(feature = "debug_prints")]
                 println!("UNREACHABLE EVENT: {first_ev:?}");
                 unreachable!();
             }

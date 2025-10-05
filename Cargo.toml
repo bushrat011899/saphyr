@@ -31,8 +31,10 @@ edition = "2021"
 rust-version = "1.65.0"
 
 [workspace.dependencies]
-arraydeque = "0.5.1"
+arraydeque = { version = "0.5.1", default-features = false }
 encoding_rs = { version = "0.8.33" }
+# Keep in sync with hashlink to reduce dependency duplication
+hashbrown = { version = "0.15", default-features = false, features = ["default-hasher"] }
 hashlink = "0.10"
 libtest-mimic = "0.8.1"
 miette = { version = "7.5.0", features = ["fancy"] }
@@ -42,7 +44,7 @@ rustyline = "16.0.0"
 saphyr = { path = "saphyr" }
 saphyr-bench = { path = "bench" }
 saphyr-parser = { path = "parser" }
-thiserror = "2.0.12"
+thiserror = { version = "2.0.12", default-features = false }
 
 [workspace.lints.rust]
 unsafe_op_in_unsafe_fn = "deny"

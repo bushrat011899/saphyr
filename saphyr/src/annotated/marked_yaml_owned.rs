@@ -2,7 +2,12 @@
 //!
 //! This is set aside so as to not clutter `annotated.rs`.
 
-use std::borrow::Cow;
+use alloc::{
+    borrow::Cow,
+    boxed::Box,
+    string::{String, ToString},
+    vec::Vec,
+};
 
 use hashlink::LinkedHashMap;
 use saphyr_parser::{ScalarStyle, Span, Tag};
@@ -123,8 +128,8 @@ impl PartialEq<MarkedYamlOwned> for MarkedYamlOwned {
 // I don't know if it's okay to implement that, but we need it for the hashmap.
 impl Eq for MarkedYamlOwned {}
 
-impl std::hash::Hash for MarkedYamlOwned {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+impl core::hash::Hash for MarkedYamlOwned {
+    fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
         self.data.hash(state);
     }
 }
@@ -206,7 +211,7 @@ impl LoadableYamlNode<'_> for MarkedYamlOwned {
             span: Span::default(),
             data: YamlDataOwned::BadValue,
         };
-        std::mem::swap(&mut taken_out, self);
+        core::mem::swap(&mut taken_out, self);
         taken_out
     }
 
