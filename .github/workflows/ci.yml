@@ -14,14 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --component rustfmt --component clippy --no-self-update
-      - run: rustup target add wasm32v1-none
       - uses: Swatinem/rust-cache@v2
       - name: Run clippy checks
         run: cargo clippy --all-targets -- -D warnings
       - name: Run format checks
         run: cargo fmt --check
-      - name: Check `no_std` compatibility
-        run: cargo check --no-default-features --target wasm32v1-none
 
   test:
     name: Test using Rust ${{ matrix.rust }} on ${{ matrix.os }}

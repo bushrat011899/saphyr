@@ -1,5 +1,5 @@
-use alloc::{borrow::Cow, boxed::Box, vec::Vec};
-use core::{
+use std::{
+    borrow::Cow,
     hash::{BuildHasher, Hasher},
     marker::PhantomData,
     ops::{Index, IndexMut},
@@ -40,7 +40,7 @@ use crate::{annotated::AnnotatedNode, Scalar};
 #[derive(Clone, PartialEq, PartialOrd, Debug, Eq, Ord, Hash)]
 pub enum YamlData<'input, Node>
 where
-    Node: core::hash::Hash + core::cmp::Eq + From<Self> + AnnotatedNode,
+    Node: std::hash::Hash + std::cmp::Eq + From<Self> + AnnotatedNode,
 {
     /// The raw string from the input.
     ///
@@ -120,11 +120,11 @@ define_yaml_object_impl!(
     YamlData<'input, Node>,
     < 'input, Node>,
     where {
-        Node: core::hash::Hash
-            + core::cmp::Eq
+        Node: std::hash::Hash
+            + std::cmp::Eq
             + From<Self>
             + AnnotatedNode
-            + for<'a> core::cmp::PartialEq<Node::HashKey<'a>>,
+            + for<'a> std::cmp::PartialEq<Node::HashKey<'a>>,
     },
     mappingtype = AnnotatedMapping<'input, Node>,
     sequencetype = AnnotatedSequence<Node>,
@@ -136,17 +136,17 @@ define_yaml_object_impl!(
 
 impl<'input, Node> YamlData<'input, Node>
 where
-    Node: core::hash::Hash
-        + core::cmp::Eq
+    Node: std::hash::Hash
+        + std::cmp::Eq
         + From<Self>
         + AnnotatedNode
-        + for<'a> core::cmp::PartialEq<Node::HashKey<'a>>,
+        + for<'a> std::cmp::PartialEq<Node::HashKey<'a>>,
 {
     /// Take the contained node out of `Self`, leaving a `BadValue` in its place.
     #[must_use]
     pub fn take(&mut self) -> Self {
         let mut taken_out = Self::BadValue;
-        core::mem::swap(self, &mut taken_out);
+        std::mem::swap(self, &mut taken_out);
         taken_out
     }
 
@@ -155,7 +155,7 @@ where
     where
         'input: 'a,
     {
-        use core::hash::Hash;
+        use std::hash::Hash;
 
         match self {
             Self::Mapping(mapping) => {
@@ -182,8 +182,8 @@ where
     fn as_mapping_get_mut_impl(&mut self, key: &str) -> Option<&mut Node> {
         match self.as_mapping_mut() {
             Some(mapping) => {
-                use core::hash::Hash;
                 use hashlink::linked_hash_map::RawEntryMut::{Occupied, Vacant};
+                use std::hash::Hash;
 
                 // In order to work around `needle`'s lifetime being different from `h`'s, we need
                 // to manually compute the hash. Otherwise, we'd use `h.get()`, which complains the
@@ -208,11 +208,11 @@ where
 
 impl<'input, Node> IntoIterator for YamlData<'input, Node>
 where
-    Node: core::hash::Hash
-        + core::cmp::Eq
+    Node: std::hash::Hash
+        + std::cmp::Eq
         + From<Self>
         + AnnotatedNode
-        + for<'a> core::cmp::PartialEq<Node::HashKey<'a>>,
+        + for<'a> std::cmp::PartialEq<Node::HashKey<'a>>,
 {
     type Item = Node;
     type IntoIter = AnnotatedYamlIter<'input, Node>;
@@ -229,15 +229,15 @@ where
 #[allow(clippy::module_name_repetitions)]
 pub struct AnnotatedYamlIter<'input, Node>
 where
-    Node: core::hash::Hash + core::cmp::Eq + From<YamlData<'input, Node>> + AnnotatedNode,
+    Node: std::hash::Hash + std::cmp::Eq + From<YamlData<'input, Node>> + AnnotatedNode,
 {
-    yaml: alloc::vec::IntoIter<Node>,
+    yaml: std::vec::IntoIter<Node>,
     marker: PhantomData<&'input ()>,
 }
 
 impl<'input, Node> Iterator for AnnotatedYamlIter<'input, Node>
 where
-    Node: core::hash::Hash + core::cmp::Eq + From<YamlData<'input, Node>> + AnnotatedNode,
+    Node: std::hash::Hash + std::cmp::Eq + From<YamlData<'input, Node>> + AnnotatedNode,
 {
     type Item = Node;
 

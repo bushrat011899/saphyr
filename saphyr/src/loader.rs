@@ -1,18 +1,13 @@
 //! The default loader.
 
-use alloc::{borrow::Cow, collections::BTreeMap, vec::Vec};
-use core::marker::PhantomData;
+use std::{borrow::Cow, collections::BTreeMap, marker::PhantomData, sync::Arc};
 
 use hashlink::LinkedHashMap;
 use saphyr_parser::{
     BufferedInput, Event, Input, Marker, Parser, ScanError, Span, SpannedEventReceiver, Tag,
 };
-use thiserror::Error;
 
 use crate::{Mapping, Yaml};
-
-#[cfg(feature = "encoding")]
-use alloc::sync::Arc;
 
 /// Main structure for parsing YAML.
 ///
@@ -42,7 +37,7 @@ where
 ///
 /// This trait must be implemented on YAML node types (i.e.: [`Yaml`] and annotated YAML nodes). It
 /// provides the necessary methods for [`YamlLoader`] to load data into the node.
-pub trait LoadableYamlNode<'input>: Clone + core::hash::Hash + Eq {
+pub trait LoadableYamlNode<'input>: Clone + std::hash::Hash + Eq {
     /// The type of the key for the hash variant of the YAML node.
     ///
     /// The `HashKey` must be [`Eq`] and [`Hash`] to satisfy the hash map requirements.
@@ -58,12 +53,12 @@ pub trait LoadableYamlNode<'input>: Clone + core::hash::Hash + Eq {
     /// [here](https://github.com/rust-lang/rust/issues/124614#issuecomment-2090725842). A previous
     /// attempt at solving lifetimes used capsules, but [`AnnotatedNode`] is sufficient.
     ///
-    /// [`Hash`]: core::hash::Hash
-    /// [`Borrow<Self>`]: core::borrow::Borrow
+    /// [`Hash`]: std::hash::Hash
+    /// [`Borrow<Self>`]: std::borrow::Borrow
     /// [`From<Self>`]: From
     /// [`PartialEq<Self>`]: PartialEq
     /// [`AnnotatedNode`]: crate::annotated::AnnotatedNode
-    type HashKey: Eq + core::hash::Hash + core::borrow::Borrow<Self> + From<Self>;
+    type HashKey: Eq + std::hash::Hash + std::borrow::Borrow<Self> + From<Self>;
 
     /// Create an instance of `Self` from a [`Yaml`].
     ///
@@ -359,24 +354,38 @@ where
 }
 
 /// An error that happened when loading a YAML document.
-#[derive(Debug, Clone, Error)]
-#[non_exhaustive]
+#[derive(Debug, Clone)]
 pub enum LoadError {
     /// An I/O error.
-    #[cfg(feature = "encoding")]
-    #[error("{0}")]
-    IO(#[source] Arc<std::io::Error>),
+    IO(Arc<std::io::Error>),
     /// An error within the scanner. This indicates a malformed YAML input.
-    #[error("{0}")]
-    Scan(#[source] ScanError),
+    Scan(ScanError),
     /// A decoding error (e.g.: Invalid UTF-8).
-    #[error("{0}")]
-    Decode(alloc::borrow::Cow<'static, str>),
+    Decode(std::borrow::Cow<'static, str>),
 }
 
-#[cfg(feature = "encoding")]
 impl From<std::io::Error> for LoadError {
     fn from(error: std::io::Error) -> Self {
         LoadError::IO(Arc::new(error))
+    }
+}
+
+impl std::error::Error for LoadError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(match &self {
+            LoadError::IO(e) => e,
+            LoadError::Scan(e) => e,
+            LoadError::Decode(_) => return None,
+        })
+    }
+}
+
+impl std::fmt::Display for LoadError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LoadError::IO(e) => e.fmt(f),
+            LoadError::Scan(e) => e.fmt(f),
+            LoadError::Decode(e) => e.fmt(f),
+        }
     }
 }

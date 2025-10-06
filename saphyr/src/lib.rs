@@ -114,8 +114,6 @@
 //!
 //! The MSRV for this feature is `1.70.0`.
 //!
-//! This feature is _not_ `no_std` compatible.
-//!
 //! [`MarkedYaml`]: crate::MarkedYaml
 //! [`MarkedYamlOwned`]: crate::MarkedYamlOwned
 //! [`Marker`]: crate::Marker
@@ -127,12 +125,6 @@
 //! [`early_parse`]: crate::YamlLoader::early_parse
 
 #![warn(missing_docs, clippy::pedantic)]
-#![no_std]
-
-#[macro_use]
-extern crate alloc;
-#[cfg(any(feature = "encoding", test))]
-extern crate std;
 
 #[macro_use]
 mod macros;

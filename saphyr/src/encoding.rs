@@ -1,7 +1,6 @@
 //! Encoding utilities. Available only with the `encoding` feature.
 
-use alloc::{borrow::Cow, string::String, vec::Vec};
-use core::ops::ControlFlow;
+use std::{borrow::Cow, ops::ControlFlow};
 
 use encoding_rs::{Decoder, DecoderResult, Encoding};
 
@@ -232,7 +231,7 @@ c: [1, 2]
         let mut decoder = YamlDecoder::read(s as &[u8]);
         let out = decoder.decode().unwrap();
         let doc = &out[0];
-        std::println!("GOT: {doc:?}");
+        println!("GOT: {doc:?}");
         assert_eq!(doc["a"].as_integer().unwrap(), 1i64);
         assert!((doc["b"].as_floating_point().unwrap() - 2.2f64) <= f64::EPSILON);
         assert_eq!(doc["c"][1].as_integer().unwrap(), 2i64);
@@ -249,7 +248,7 @@ c: [1, 2]
         let mut decoder = YamlDecoder::read(s as &[u8]);
         let out = decoder.decode().unwrap();
         let doc = &out[0];
-        std::println!("GOT: {doc:?}");
+        println!("GOT: {doc:?}");
         assert_eq!(doc["a"].as_integer().unwrap(), 1i64);
         assert!((doc["b"].as_floating_point().unwrap() - 2.2f64).abs() <= f64::EPSILON);
         assert_eq!(doc["c"][1].as_integer().unwrap(), 2i64);
@@ -266,7 +265,7 @@ c: [1, 2]
         let mut decoder = YamlDecoder::read(s as &[u8]);
         let out = decoder.decode().unwrap();
         let doc = &out[0];
-        std::println!("GOT: {doc:?}");
+        println!("GOT: {doc:?}");
         assert_eq!(doc["a"].as_integer().unwrap(), 1i64);
         assert!((doc["b"].as_floating_point().unwrap() - 2.2f64).abs() <= f64::EPSILON);
         assert_eq!(doc["c"][1].as_integer().unwrap(), 2i64);
@@ -286,7 +285,7 @@ c: [1, 2]
             .decode()
             .unwrap();
         let doc = &out[0];
-        std::println!("GOT: {doc:?}");
+        println!("GOT: {doc:?}");
         assert_eq!(doc["a"].as_integer().unwrap(), 1i64);
         assert!((doc["b"].as_floating_point().unwrap() - 2.2f64).abs() <= f64::EPSILON);
         assert_eq!(doc["c"][1].as_integer().unwrap(), 2i64);

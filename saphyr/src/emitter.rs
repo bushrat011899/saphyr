@@ -1,21 +1,39 @@
 //! YAML serialization helpers.
 
-use core::fmt;
-
-use thiserror::Error;
-
 use crate::{
     char_traits,
     yaml::{Mapping, Yaml},
     Scalar,
 };
+use std::convert::From;
+use std::error::Error;
+use std::fmt::{self, Display};
 
 /// An error when emitting YAML.
-#[derive(Copy, Clone, Debug, Error)]
+#[derive(Copy, Clone, Debug)]
 pub enum EmitError {
     /// A formatting error.
-    #[error("{0}")]
-    FmtError(#[from] fmt::Error),
+    FmtError(fmt::Error),
+}
+
+impl Error for EmitError {
+    fn cause(&self) -> Option<&dyn Error> {
+        None
+    }
+}
+
+impl Display for EmitError {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            EmitError::FmtError(ref err) => Display::fmt(err, formatter),
+        }
+    }
+}
+
+impl From<fmt::Error> for EmitError {
+    fn from(f: fmt::Error) -> Self {
+        EmitError::FmtError(f)
+    }
 }
 
 /// The YAML serializer.
@@ -448,8 +466,6 @@ fn need_quotes(string: &str) -> bool {
 
 #[cfg(test)]
 mod test {
-    use alloc::string::String;
-
     use crate::{LoadableYamlNode, Yaml, YamlEmitter};
 
     #[test]

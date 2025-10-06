@@ -9,15 +9,7 @@
 #![allow(clippy::cast_possible_wrap)]
 #![allow(clippy::cast_sign_loss)]
 
-use alloc::{
-    borrow::{Cow, ToOwned},
-    collections::VecDeque,
-    string::String,
-    vec::Vec,
-};
-use core::char;
-
-use thiserror::Error;
+use std::{borrow::Cow, char, collections::VecDeque, error::Error, fmt};
 
 use crate::{
     char_traits::{
@@ -140,8 +132,7 @@ impl Span {
 }
 
 /// An error that occurred while scanning.
-#[derive(Clone, PartialEq, Debug, Eq, Error)]
-#[error("{} at byte {} line {} column {}", .info, .mark.index, .mark.line, .mark.col + 1,)]
+#[derive(Clone, PartialEq, Debug, Eq)]
 pub struct ScanError {
     /// The position at which the error happened in the source.
     mark: Marker,
@@ -175,6 +166,25 @@ impl ScanError {
     #[must_use]
     pub fn info(&self) -> &str {
         self.info.as_ref()
+    }
+}
+
+impl Error for ScanError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
+}
+
+impl fmt::Display for ScanError {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            formatter,
+            "{} at byte {} line {} column {}",
+            self.info,
+            self.mark.index,
+            self.mark.line,
+            self.mark.col + 1,
+        )
     }
 }
 

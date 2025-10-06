@@ -725,7 +725,6 @@ dependencies = [
  "ordered-float",
  "quickcheck",
  "saphyr-parser",
- "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -749,7 +748,6 @@ name = "saphyr-parser"
 version = "0.0.6"
 dependencies = [
  "arraydeque",
- "hashbrown",
  "hashlink",
  "libtest-mimic",
  "miette",

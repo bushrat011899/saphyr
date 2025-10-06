@@ -4,7 +4,6 @@ use crate::{
     },
     input::{Input, SkipTabs},
 };
-use alloc::string::String;
 
 /// A parser input that uses a `&str` as source.
 #[allow(clippy::module_name_repetitions)]

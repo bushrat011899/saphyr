@@ -38,7 +38,7 @@
 //! In order to add a new Node type, the following is required:
 //!   - Use either [`YamlData`] or [`YamlDataOwned`]. There shouldn't be a need for any other Data
 //!     type.
-//!   - Implement [`core::hash::Hash`], [`core::cmp::Eq`] and [`core::cmp::PartialEq`] for your Node
+//!   - Implement [`std::hash::Hash`], [`std::cmp::Eq`] and [`std::cmp::PartialEq`] for your Node
 //!     type. These traits are required for [`AnnotatedNode`].
 //!   - Implement [`AnnotatedNode`] or [`AnnotatedNodeOwned`] for your Node type, depending on
 //!     whether it is borrowed or not.
@@ -69,10 +69,10 @@ pub use yaml_data_owned::{AnnotatedMappingOwned, AnnotatedSequenceOwned, YamlDat
 ///
 /// [`LoadableYamlNode::HashKey`]: crate::loader::LoadableYamlNode::HashKey
 #[allow(clippy::module_name_repetitions)]
-pub trait AnnotatedNode: core::hash::Hash + core::cmp::Eq {
+pub trait AnnotatedNode: std::hash::Hash + std::cmp::Eq {
     /// The type used as the key in the [`YamlData::Mapping`] variant.
     type HashKey<'a>: From<YamlData<'a, Self::HashKey<'a>>>
-        + for<'b> core::cmp::PartialEq<Self::HashKey<'b>>
+        + for<'b> std::cmp::PartialEq<Self::HashKey<'b>>
         + AnnotatedNode;
 
     /// See [`YamlData::parse_representation_recursive`].
@@ -87,10 +87,10 @@ pub trait AnnotatedNode: core::hash::Hash + core::cmp::Eq {
 ///
 /// [`LoadableYamlNode::HashKey`]: crate::loader::LoadableYamlNode::HashKey
 #[allow(clippy::module_name_repetitions)]
-pub trait AnnotatedNodeOwned: core::hash::Hash + core::cmp::Eq {
+pub trait AnnotatedNodeOwned: std::hash::Hash + std::cmp::Eq {
     /// The type used as the key in the [`YamlDataOwned::Mapping`] variant.
     type HashKey: From<YamlDataOwned<Self::HashKey>>
-        + core::cmp::PartialEq<Self::HashKey>
+        + std::cmp::PartialEq<Self::HashKey>
         + AnnotatedNodeOwned;
 
     /// See [`YamlData::parse_representation_recursive`].

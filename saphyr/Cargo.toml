@@ -26,7 +26,6 @@ encoding_rs = { workspace = true, optional = true }
 hashlink = { workspace = true }
 ordered-float = { workspace = true }
 saphyr-parser = { workspace = true }
-thiserror = { workspace = true }
 
 [dev-dependencies]
 quickcheck = { workspace = true }

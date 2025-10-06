@@ -1,6 +1,6 @@
 //! Wrapper around a [YAML scalar](https://yaml.org/spec/1.2.2/#23-scalars).
 
-use alloc::{borrow::Cow, string::String};
+use std::borrow::Cow;
 
 use ordered_float::OrderedFloat;
 use saphyr_parser::{ScalarStyle, Tag};
@@ -74,9 +74,8 @@ impl<'input> Scalar<'input> {
     ///
     /// # Examples
     /// ```
-    /// # extern crate alloc;
     /// # use saphyr::{Scalar, ScalarStyle, Tag};
-    /// use alloc::borrow::Cow::Owned;
+    /// use std::borrow::Cow::Owned;
     /// let yaml_handle = "tag:yaml.org,2002:".to_string();
     /// assert_eq!(
     ///     Scalar::parse_from_cow_and_metadata("123".into(), ScalarStyle::Plain, None),
