@@ -21,7 +21,7 @@ jobs:
       - name: Run format checks
         run: cargo fmt --check
       - name: Check `no_std` compatibility
-        run: cargo check --no-default-features --target wasm32v1-none
+        run: cargo check -p saphyr --no-default-features --target wasm32v1-none
 
   test:
     name: Test using Rust ${{ matrix.rust }} on ${{ matrix.os }}

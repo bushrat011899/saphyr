@@ -21,7 +21,6 @@ default = [ "encoding" ]
 encoding = [ "dep:encoding_rs" ]
 
 [dependencies]
-arraydeque = { workspace = true }
 encoding_rs = { workspace = true, optional = true }
 hashlink = { workspace = true }
 ordered-float = { workspace = true }

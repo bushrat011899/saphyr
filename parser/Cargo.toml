@@ -24,8 +24,6 @@ debug_prints = []
 
 [dependencies]
 arraydeque = { workspace = true }
-hashlink = { workspace = true }
-hashbrown = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]

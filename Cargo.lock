@@ -719,7 +719,6 @@ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 name = "saphyr"
 version = "0.0.6"
 dependencies = [
- "arraydeque",
  "encoding_rs",
  "hashlink",
  "ordered-float",
@@ -749,8 +748,6 @@ name = "saphyr-parser"
 version = "0.0.6"
 dependencies = [
  "arraydeque",
- "hashbrown",
- "hashlink",
  "libtest-mimic",
  "miette",
  "quickcheck",

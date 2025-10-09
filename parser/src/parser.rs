@@ -12,12 +12,11 @@ use crate::{
 
 use alloc::{
     borrow::Cow,
+    collections::BTreeMap,
     string::{String, ToString},
     vec::Vec,
 };
 use core::fmt::Display;
-
-use hashbrown::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Debug, Eq)]
 enum State {
@@ -163,7 +162,7 @@ pub struct Parser<'input, T: Input> {
     /// The next YAML event to emit.
     current: Option<(Event<'input>, Span)>,
     /// Anchors that have been encountered in the YAML document.
-    anchors: HashMap<Cow<'input, str>, usize>,
+    anchors: BTreeMap<Cow<'input, str>, usize>,
     /// Next ID available for an anchor.
     ///
     /// Every anchor is given a unique ID. We use an incrementing ID and this is both the ID to
@@ -172,7 +171,7 @@ pub struct Parser<'input, T: Input> {
     /// The tag directives (`%TAG`) the parser has encountered.
     ///
     /// Key is the handle, and value is the prefix.
-    tags: HashMap<String, String>,
+    tags: BTreeMap<String, String>,
     /// Whether we have emitted [`Event::StreamEnd`].
     ///
     /// Emitted means that it has been returned from [`Self::next`]. If it is stored in
@@ -304,10 +303,10 @@ impl<'input, T: Input> Parser<'input, T> {
             token: None,
             current: None,
 
-            anchors: HashMap::new(),
+            anchors: BTreeMap::new(),
             // valid anchor_id starts from 1
             anchor_id_count: 1,
-            tags: HashMap::new(),
+            tags: BTreeMap::new(),
             stream_end_emitted: false,
             keep_tags: false,
         }
@@ -693,7 +692,7 @@ impl<'input, T: Input> Parser<'input, T> {
     fn parser_process_directives(&mut self) -> Result<(), ScanError> {
         let mut version_directive_received = false;
         loop {
-            let mut tags = HashMap::new();
+            let mut tags = BTreeMap::new();
             match self.peek_token()? {
                 Token(span, TokenType::VersionDirective(_, _)) => {
                     // XXX parsing with warning according to spec
