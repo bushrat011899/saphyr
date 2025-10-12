@@ -2,6 +2,10 @@
 
 ## Upcoming
 
+**Changes**:
+
+- Added `no_std` support
+
 ## v0.0.6
 
 **Fixes**:

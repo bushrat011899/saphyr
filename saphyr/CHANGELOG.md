@@ -2,6 +2,22 @@
 
 ## Upcoming
 
+**Changes**:
+
+- Added `no_std` support.
+
+**Breaking Changes**:
+
+- `LoadError` is now a `non_exhaustive` enum.
+  This allows adding variants with features without violating the additive
+  nature of Cargo features.
+  Consider using a wildcard `_` pattern to exhaustively match on `LoadError`.
+- `LoadError::Io` is now gated behind the `encoding` feature.
+  Previously, `LoadError::Io` was incompatible with `no_std` due to its reliance
+  on `std::io::Error`.
+  This error variant would only occur with the `encoding` feature enabled; now
+  this is codified.
+
 ## v0.0.6
 
 **Fixes**:
